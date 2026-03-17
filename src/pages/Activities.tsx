@@ -1,5 +1,4 @@
 import { useLanguage } from '../contexts/LanguageContext';
-import { getTranslation } from '../translations';
 import { Phone, Mail, MapPin, Heart } from 'lucide-react';
 
 type ActivitiesProps = {
@@ -7,8 +6,7 @@ type ActivitiesProps = {
 };
 
 export function Activities({ navigate }: ActivitiesProps) {
-  const { language } = useLanguage();
-  const t = (key: string) => getTranslation(language, key);
+  const { language, t } = useLanguage();
 
   const activities = [
     { num: 1, title: t('activities.activity1Title'), desc: t('activities.activity1Desc') },

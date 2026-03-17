@@ -6,9 +6,10 @@ import { DashboardStats } from '../components/dashboard/DashboardStats';
 import { ContactsTab } from '../components/dashboard/ContactsTab';
 import { DonationsTab } from '../components/dashboard/DonationsTab';
 import { VolunteersTab } from '../components/dashboard/VolunteersTab';
-import { MessageSquare, Heart, Users } from 'lucide-react';
+import { SiteContentTab } from '../components/dashboard/SiteContentTab';
+import { MessageSquare, Heart, Users, Layout } from 'lucide-react';
 
-type Tab = 'contacts' | 'donations' | 'volunteers';
+type Tab = 'contacts' | 'donations' | 'volunteers' | 'site_content';
 
 export function Dashboard() {
   const { user, signIn } = useAuth();
@@ -66,6 +67,7 @@ export function Dashboard() {
     { id: 'contacts', label: 'اتصل بنا', icon: <MessageSquare className="w-5 h-5" />, count: contacts.length },
     { id: 'donations', label: 'طلبات التبرع', icon: <Heart className="w-5 h-5" />, count: donations.length },
     { id: 'volunteers', label: 'طلبات التطوع', icon: <Users className="w-5 h-5" />, count: volunteers.length },
+    { id: 'site_content', label: 'محتوى الموقع', icon: <Layout className="w-5 h-5" />, count: 0 },
   ];
 
   return (
@@ -95,13 +97,15 @@ export function Dashboard() {
                 )}
                 {tab.icon}
                 <span>{tab.label}</span>
-                <span className={`text-xs font-bold px-2 py-0.5 rounded-full ${
-                  activeTab === tab.id
-                    ? 'bg-brand-600 text-white'
-                    : 'bg-gray-200 dark:bg-gray-600 text-gray-600 dark:text-gray-300'
-                }`}>
-                  {tab.count}
-                </span>
+                {tab.id !== 'site_content' && (
+                  <span className={`text-xs font-bold px-2 py-0.5 rounded-full ${
+                    activeTab === tab.id
+                      ? 'bg-brand-600 text-white'
+                      : 'bg-gray-200 dark:bg-gray-600 text-gray-600 dark:text-gray-300'
+                  }`}>
+                    {tab.count}
+                  </span>
+                )}
               </button>
             ))}
           </div>
@@ -116,6 +120,7 @@ export function Dashboard() {
                 {activeTab === 'contacts' && <ContactsTab contacts={contacts} onRefresh={fetchAll} />}
                 {activeTab === 'donations' && <DonationsTab donations={donations} onRefresh={fetchAll} />}
                 {activeTab === 'volunteers' && <VolunteersTab volunteers={volunteers} onRefresh={fetchAll} />}
+                {activeTab === 'site_content' && <SiteContentTab onRefresh={fetchAll} />}
               </>
             )}
           </div>

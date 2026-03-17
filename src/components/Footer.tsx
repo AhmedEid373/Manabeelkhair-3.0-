@@ -1,14 +1,21 @@
 import { Mail, Phone, MapPin, Facebook, Instagram, Linkedin } from 'lucide-react';
 import { useLanguage } from '../contexts/LanguageContext';
-import { getTranslation } from '../translations';
+import { useSiteContent } from '../contexts/SiteContentContext';
 
 type FooterProps = {
   navigate: (path: string) => void;
 };
 
 export function Footer({ navigate }: FooterProps) {
-  const { language } = useLanguage();
-  const t = (key: string) => getTranslation(language, key);
+  const { language, t } = useLanguage();
+  const { getContent } = useSiteContent();
+
+  const logoUrl = getContent('nav.logo_url', language) || '/logo-new-disgin.png';
+  const facebookUrl = getContent('social.facebook', language) || 'https://www.facebook.com/ManabeaAlkhair/';
+  const instagramUrl = getContent('social.instagram', language) || 'https://www.instagram.com/ManabeaAlkhair';
+  const linkedinUrl = getContent('social.linkedin', language) || 'https://www.linkedin.com/company/manabeaalkhairassociation';
+  const footerEmail = getContent('footer.email', language) || 'manabeaalkhair@gmail.com';
+  const footerPhone = getContent('footer.phone', language) || '+20 122 214 2359';
 
   const navLinks = [
     { path: '/', label: t('nav.home') },
@@ -28,7 +35,7 @@ export function Footer({ navigate }: FooterProps) {
           <div>
             <div className="flex items-center mb-4">
               <img
-                src="/logo-new-disgin.png"
+                src={logoUrl}
                 alt="جمعية منابع الخير"
                 className="h-14 w-auto object-contain brightness-0 invert"
               />
@@ -60,21 +67,21 @@ export function Footer({ navigate }: FooterProps) {
               <li className="flex items-start gap-2 text-sm">
                 <Mail className="w-5 h-5 text-brand-400 flex-shrink-0 mt-0.5" />
                 <a
-                  href="mailto:manabeaalkhair@gmail.com"
+                  href={`mailto:${footerEmail}`}
                   className="text-gray-300 hover:text-brand-400 transition-colors break-all"
                   dir="ltr"
                 >
-                  manabeaalkhair@gmail.com
+                  {footerEmail}
                 </a>
               </li>
               <li className="flex items-start gap-2 text-sm">
                 <Phone className="w-5 h-5 text-brand-400 flex-shrink-0 mt-0.5" />
                 <a
-                  href="tel:+201222142359"
+                  href={`tel:${footerPhone.replace(/\s/g, '')}`}
                   className="text-gray-300 hover:text-brand-400 transition-colors"
                   dir="ltr"
                 >
-                  +20 122 214 2359
+                  {footerPhone}
                 </a>
               </li>
               <li className="flex items-start gap-2 text-sm">
@@ -86,7 +93,7 @@ export function Footer({ navigate }: FooterProps) {
               <h4 className="font-semibold text-sm mb-3">{t('footer.followUs')}</h4>
               <div className="flex gap-3">
                 <a
-                  href="https://www.facebook.com/ManabeaAlkhair/"
+                  href={facebookUrl}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="bg-blue-600 p-2 rounded-lg text-white hover:bg-blue-700 transition-colors"
@@ -95,7 +102,7 @@ export function Footer({ navigate }: FooterProps) {
                   <Facebook className="w-4 h-4" />
                 </a>
                 <a
-                  href="https://www.instagram.com/ManabeaAlkhair"
+                  href={instagramUrl}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="bg-gradient-to-br from-pink-500 to-orange-400 p-2 rounded-lg text-white hover:opacity-90 transition-opacity"
@@ -104,7 +111,7 @@ export function Footer({ navigate }: FooterProps) {
                   <Instagram className="w-4 h-4" />
                 </a>
                 <a
-                  href="https://www.linkedin.com/company/manabeaalkhairassociation"
+                  href={linkedinUrl}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="bg-blue-700 p-2 rounded-lg text-white hover:bg-blue-800 transition-colors"

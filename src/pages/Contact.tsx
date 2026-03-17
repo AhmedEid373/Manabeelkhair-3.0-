@@ -1,12 +1,10 @@
 import { useState } from 'react';
 import { Send, CheckCircle, AlertCircle, Mail, Phone, MapPin, Clock, Facebook, Instagram, Linkedin, Truck, Users, Building2, MessageCircle } from 'lucide-react';
 import { useLanguage } from '../contexts/LanguageContext';
-import { getTranslation } from '../translations';
 import { supabase } from '../lib/supabase';
 
 export function Contact() {
-  const { language } = useLanguage();
-  const t = (key: string) => getTranslation(language, key);
+  const { language, t } = useLanguage();
 
   const [formData, setFormData] = useState({
     name: '',

@@ -1,10 +1,8 @@
 import { Heart, Users, TrendingUp, Globe, Award, Target } from 'lucide-react';
 import { useLanguage } from '../contexts/LanguageContext';
-import { getTranslation } from '../translations';
 
 export function About() {
-  const { language } = useLanguage();
-  const t = (key: string) => getTranslation(language, key);
+  const { language, t } = useLanguage();
 
   return (
     <div className="min-h-screen bg-white dark:bg-gray-900 transition-colors">

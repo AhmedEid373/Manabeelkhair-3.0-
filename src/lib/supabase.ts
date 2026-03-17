@@ -53,3 +53,14 @@ export type VolunteerRequest = {
   admin_notes: string | null;
   created_at: string;
 };
+
+export type SiteContent = {
+  id: string;
+  section_key: string;
+  content_ar: string;
+  content_en: string;
+  content_type: string;
+  section_group: string;
+  updated_at: string;
+  updated_by: string | null;
+};
