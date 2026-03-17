@@ -2,7 +2,6 @@ import { useState } from 'react';
 import { Send, CheckCircle, AlertCircle, User, Mail, Phone, DollarSign, Tag, Heart } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import { useLanguage } from '../contexts/LanguageContext';
-import { getTranslation } from '../translations';
 
 interface FormState {
   full_name: string;
@@ -25,8 +24,7 @@ const initialState: FormState = {
 };
 
 export function DonationContactForm() {
-  const { language } = useLanguage();
-  const t = (key: string) => getTranslation(language, key);
+  const { language, t } = useLanguage();
 
   const DONATION_METHODS = [
     t('donationForm.methodBankTransfer'),

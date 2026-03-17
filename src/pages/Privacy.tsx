@@ -1,10 +1,8 @@
 import { Shield, FileText, BarChart3, CheckCircle } from 'lucide-react';
 import { useLanguage } from '../contexts/LanguageContext';
-import { getTranslation } from '../translations';
 
 export function Privacy() {
-  const { language } = useLanguage();
-  const t = (key: string) => getTranslation(language, key);
+  const { language, t } = useLanguage();
 
   const sections = [
     {

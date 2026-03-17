@@ -3,7 +3,7 @@ import { useState } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import { useLanguage } from '../contexts/LanguageContext';
 import { useTheme } from '../contexts/ThemeContext';
-import { getTranslation } from '../translations';
+import { useSiteContent } from '../contexts/SiteContentContext';
 
 type NavigationProps = {
   currentPath: string;
@@ -13,10 +13,11 @@ type NavigationProps = {
 export function Navigation({ currentPath, navigate }: NavigationProps) {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const { user, signOut } = useAuth();
-  const { language, setLanguage } = useLanguage();
+  const { language, setLanguage, t } = useLanguage();
   const { theme, toggleTheme } = useTheme();
+  const { getContent } = useSiteContent();
 
-  const t = (key: string) => getTranslation(language, key);
+  const logoUrl = getContent('nav.logo_url', language) || '/logo-new-disgin.png';
 
   const navItems = [
     { path: '/', label: t('nav.home') },
@@ -55,7 +56,7 @@ export function Navigation({ currentPath, navigate }: NavigationProps) {
               className="flex items-center hover:opacity-80 transition-opacity"
             >
               <img
-                src="/logo-new-disgin.png"
+                src={logoUrl}
                 alt="جمعية منابع الخير"
                 className="h-12 sm:h-14 md:h-16 w-auto object-contain"
               />

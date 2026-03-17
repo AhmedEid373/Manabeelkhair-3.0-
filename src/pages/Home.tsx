@@ -1,14 +1,12 @@
 import { Heart, ArrowRight, Award, Target, Eye } from 'lucide-react';
 import { useLanguage } from '../contexts/LanguageContext';
-import { getTranslation } from '../translations';
 
 type HomeProps = {
   navigate: (path: string) => void;
 };
 
 export function Home({ navigate }: HomeProps) {
-  const { language } = useLanguage();
-  const t = (key: string) => getTranslation(language, key);
+  const { language, t } = useLanguage();
 
   return (
     <div className="min-h-screen bg-white dark:bg-gray-900 transition-colors">

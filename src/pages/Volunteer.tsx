@@ -1,6 +1,5 @@
 import { Users, Lightbulb, ShieldCheck, Award } from 'lucide-react';
 import { useLanguage } from '../contexts/LanguageContext';
-import { getTranslation } from '../translations';
 import { VolunteerForm } from '../components/VolunteerForm';
 
 const colorMap: Record<string, string> = {
@@ -14,8 +13,7 @@ const bgMap: Record<string, string> = {
 };
 
 export function Volunteer() {
-  const { language } = useLanguage();
-  const t = (key: string) => getTranslation(language, key);
+  const { language, t } = useLanguage();
 
   const VOLUNTEER_AREAS = [
     {

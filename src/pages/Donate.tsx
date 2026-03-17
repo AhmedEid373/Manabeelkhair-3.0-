@@ -1,12 +1,10 @@
 import { Heart, Building2, MapPin, RefreshCw, UserCheck, Copy, CheckCircle, Phone, Mail, FileText, Shield } from 'lucide-react';
 import { useState } from 'react';
 import { useLanguage } from '../contexts/LanguageContext';
-import { getTranslation } from '../translations';
 import { DonationContactForm } from '../components/DonationContactForm';
 
 export function Donate() {
-  const { language } = useLanguage();
-  const t = (key: string) => getTranslation(language, key);
+  const { language, t } = useLanguage();
   const [copied, setCopied] = useState<string | null>(null);
 
   const handleCopy = (text: string, key: string) => {
