@@ -33,7 +33,7 @@ const initialState: FormState = {
 };
 
 export function VolunteerForm() {
-  const { language, t } = useLanguage();
+  const { t } = useLanguage();
 
   const VOLUNTEER_TYPES = [
     { value: t('volunteerForm.typeField'), label: t('volunteerForm.typeField') },

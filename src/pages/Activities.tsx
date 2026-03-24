@@ -6,7 +6,7 @@ type ActivitiesProps = {
 };
 
 export function Activities({ navigate }: ActivitiesProps) {
-  const { language, t } = useLanguage();
+  const { t } = useLanguage();
 
   const activities = [
     { num: 1, title: t('activities.activity1Title'), desc: t('activities.activity1Desc') },

@@ -24,7 +24,7 @@ const initialState: FormState = {
 };
 
 export function DonationContactForm() {
-  const { language, t } = useLanguage();
+  const { t } = useLanguage();
 
   const DONATION_METHODS = [
     t('donationForm.methodBankTransfer'),

@@ -6,7 +6,7 @@ type HomeProps = {
 };
 
 export function Home({ navigate }: HomeProps) {
-  const { language, t } = useLanguage();
+  const { t } = useLanguage();
 
   return (
     <div className="min-h-screen bg-white dark:bg-gray-900 transition-colors">
