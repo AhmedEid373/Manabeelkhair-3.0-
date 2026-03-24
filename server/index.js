@@ -6,8 +6,9 @@ const MySQLStore   = require('express-mysql-session')(session);
 const bodyParser   = require('body-parser');
 
 const pool         = require('./db');
-const authRoutes   = require('./routes/auth');
-const tableRoutes  = require('./routes/tables');
+const authRoutes    = require('./routes/auth');
+const tableRoutes   = require('./routes/tables');
+const contentRoutes = require('./routes/content');
 
 const app  = express();
 const PORT = process.env.PORT || 3001;
@@ -35,8 +36,9 @@ app.use(bodyParser.json());
 
 // ── Routes ────────────────────────────────────────────────────────────────
 
-app.use('/api/auth',   authRoutes);
-app.use('/api/tables', tableRoutes);
+app.use('/api/auth',    authRoutes);
+app.use('/api/tables',  tableRoutes);
+app.use('/api/content', contentRoutes);
 
 // ── Health check ──────────────────────────────────────────────────────────
 
