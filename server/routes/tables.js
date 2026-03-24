@@ -32,12 +32,20 @@ function guardTable(req, res, next) {
   next();
 }
 
+// ── Auth guard that allows public read access to site_content ─────────────
+
+function requireAuthUnlessSiteContent(req, res, next) {
+  if (req.params.table === 'site_content') return next();
+  return requireAuth(req, res, next);
+}
+
 // ── GET /api/tables/:table — list all rows ────────────────────────────────
 
-router.get('/:table', requireAuth, guardTable, async (req, res) => {
+router.get('/:table', requireAuthUnlessSiteContent, guardTable, async (req, res) => {
   try {
+    const orderCol = req.params.table === 'site_content' ? 'updated_at' : 'created_at';
     const [rows] = await pool.execute(
-      `SELECT * FROM \`${req.params.table}\` ORDER BY created_at DESC`
+      `SELECT * FROM \`${req.params.table}\` ORDER BY \`${orderCol}\` DESC`
     );
     res.json(rows);
   } catch (err) {
