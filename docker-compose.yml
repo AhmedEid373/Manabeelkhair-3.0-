@@ -1,0 +1,45 @@
+version: "3.8"
+
+services:
+  mysql:
+    image: mysql:8.0
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-manabeelkhair_root_2024}
+      MYSQL_DATABASE: ${MYSQL_DATABASE:-manabeelkhair}
+      MYSQL_USER: ${MYSQL_USER:-manabeelkhair}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD:-manabeelkhair_pass_2024}
+    volumes:
+      - mysql_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 30s
+    networks:
+      - app-network
+
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    ports:
+      - "${APP_PORT:-80}:80"
+    environment:
+      DATABASE_URL: mysql://${MYSQL_USER:-manabeelkhair}:${MYSQL_PASSWORD:-manabeelkhair_pass_2024}@mysql:3306/${MYSQL_DATABASE:-manabeelkhair}
+      SESSION_SECRET: ${SESSION_SECRET:-change-me-to-a-long-random-string}
+      NODE_ENV: production
+    depends_on:
+      mysql:
+        condition: service_healthy
+    networks:
+      - app-network
+
+volumes:
+  mysql_data:
+
+networks:
+  app-network:
+    driver: bridge
