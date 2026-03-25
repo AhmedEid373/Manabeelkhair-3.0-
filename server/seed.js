@@ -23,8 +23,10 @@ function hashPassword(password) {
   return `${salt}:${hash}`;
 }
 
-async function seed() {
-  const conn = await mysql.createConnection(parseDbUrl(process.env.DATABASE_URL));
+async function seed(externalPool) {
+  // When called from index.js, use the shared pool; when run as CLI, create a dedicated connection.
+  const conn = externalPool || await mysql.createConnection(parseDbUrl(process.env.DATABASE_URL));
+  const ownConnection = !externalPool;
 
   // ── Admin users ───────────────────────────────────────────────────────────
   await conn.execute(`
@@ -253,11 +255,16 @@ async function seed() {
   }
   console.log('Site content seeded (' + siteRows.length + ' rows).');
 
-  await conn.end();
+  if (ownConnection) await conn.end();
   console.log('Seed complete.');
 }
 
-seed().catch(err => {
-  console.error('Seed failed:', err);
-  process.exit(1);
-});
+module.exports = { seed };
+
+// Allow running directly: node server/seed.js
+if (require.main === module) {
+  seed().catch(err => {
+    console.error('Seed failed:', err);
+    process.exit(1);
+  });
+}

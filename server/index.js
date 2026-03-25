@@ -6,6 +6,7 @@ const MySQLStore   = require('express-mysql-session')(session);
 const bodyParser   = require('body-parser');
 
 const pool         = require('./db');
+const { seed }     = require('./seed');
 const authRoutes   = require('./routes/auth');
 const tableRoutes  = require('./routes/tables');
 
@@ -44,6 +45,14 @@ app.get('/api/health', (_req, res) => res.json({ ok: true }));
 
 // ── Start ─────────────────────────────────────────────────────────────────
 
-app.listen(PORT, () => {
-  console.log(`API server listening on port ${PORT}`);
-});
+// Ensure tables + default admin exist, then start listening
+seed(pool)
+  .then(() => {
+    app.listen(PORT, () => {
+      console.log(`API server listening on port ${PORT}`);
+    });
+  })
+  .catch(err => {
+    console.error('Seed failed:', err);
+    process.exit(1);
+  });
