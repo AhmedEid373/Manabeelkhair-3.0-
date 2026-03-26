@@ -206,16 +206,18 @@ export function SiteContentTab({ onRefresh }: Props) {
     setSaveStatus('idle');
 
     try {
-      const updates = Object.entries(editedFields).map(([key, values]) =>
-        supabase
+      const updates = Object.entries(editedFields).map(([key, values]) => {
+        const item = allContent.find((c) => c.section_key === key);
+        if (!item) return Promise.resolve({ data: null, error: new Error(`Item not found: ${key}`) });
+        return supabase
           .from('site_content')
           .update({
             content_ar: values.content_ar,
             content_en: values.content_en,
             updated_at: new Date().toISOString(),
           })
-          .eq('section_key', key)
-      );
+          .eq('id', item.id);
+      });
 
       const results = await Promise.all(updates);
       const hasError = results.some((r) => r.error);
