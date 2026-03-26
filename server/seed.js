@@ -119,14 +119,16 @@ async function seed(externalPool) {
       FOR EACH ROW EXECUTE FUNCTION update_updated_at_column()
   `);
 
-  // ── Default admin user (only if no admin exists yet) ─────────────────────
+  // ── Default admin user ────────────────────────────────────────────────────
+  // Set RESET_ADMIN=true in env to force-reset credentials to defaults.
   const { rows: adminRows } = await conn.query('SELECT COUNT(*) FROM admin_users');
-  if (parseInt(adminRows[0].count) === 0) {
+  if (parseInt(adminRows[0].count) === 0 || process.env.RESET_ADMIN === 'true') {
     await conn.query(
-      `INSERT INTO admin_users (email, password) VALUES ($1, $2)`,
+      `INSERT INTO admin_users (email, password) VALUES ($1, $2)
+       ON CONFLICT (email) DO UPDATE SET password = EXCLUDED.password`,
       ['admin@manabeaalkhair.org', hashPassword('Admin@2024')]
     );
-    console.log('Default admin user created: admin@manabeaalkhair.org / Admin@2024');
+    console.log('Admin user upserted: admin@manabeaalkhair.org / Admin@2024');
   } else {
     console.log('Admin user already exists — skipping seed.');
   }
