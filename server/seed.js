@@ -107,20 +107,13 @@ async function seed(externalPool) {
   `);
 
   // ── Default admin user ────────────────────────────────────────────────────
-  const [[existing]] = await conn.execute(
-    'SELECT id FROM admin_users WHERE email = ?',
-    ['admin@manabeaalkhair.org']
+  await conn.execute(
+    `INSERT INTO admin_users (email, password)
+     VALUES (?, ?)
+     ON DUPLICATE KEY UPDATE password = VALUES(password)`,
+    ['admin@manabeaalkhair.org', hashPassword('Admin@2024')]
   );
-
-  if (!existing) {
-    await conn.execute(
-      'INSERT INTO admin_users (email, password) VALUES (?, ?)',
-      ['admin@manabeaalkhair.org', hashPassword('Admin@2024')]
-    );
-    console.log('Default admin user created: admin@manabeaalkhair.org / Admin@2024');
-  } else {
-    console.log('Admin user already exists — skipped.');
-  }
+  console.log('Default admin user upserted: admin@manabeaalkhair.org / Admin@2024');
 
   // ── Default site content ────────────────────────────────────────────────
   const siteRows = [
