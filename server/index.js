@@ -4,6 +4,7 @@ const express      = require('express');
 const session      = require('express-session');
 const MySQLStore   = require('express-mysql-session')(session);
 const bodyParser   = require('body-parser');
+const path         = require('path');
 
 const pool         = require('./db');
 const { seed }      = require('./seed');
@@ -69,6 +70,16 @@ app.get('/api/health', async (_req, res) => {
     res.status(503).json({ ok: false, database: 'disconnected', error: err.message });
   }
 });
+
+// ── Serve React frontend in production ────────────────────────────────────
+
+if (process.env.NODE_ENV === 'production') {
+  const distPath = path.join(__dirname, '..', 'dist');
+  app.use(express.static(distPath));
+  app.get('*', (req, res) => {
+    res.sendFile(path.join(distPath, 'index.html'));
+  });
+}
 
 // ── Start ─────────────────────────────────────────────────────────────────
 
