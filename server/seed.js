@@ -119,14 +119,17 @@ async function seed(externalPool) {
       FOR EACH ROW EXECUTE FUNCTION update_updated_at_column()
   `);
 
-  // ── Default admin user ────────────────────────────────────────────────────
-  await conn.query(
-    `INSERT INTO admin_users (email, password)
-     VALUES ($1, $2)
-     ON CONFLICT (email) DO UPDATE SET password = EXCLUDED.password`,
-    ['admin@manabeaalkhair.org', hashPassword('Admin@2024')]
-  );
-  console.log('Default admin user upserted: admin@manabeaalkhair.org / Admin@2024');
+  // ── Default admin user (only if no admin exists yet) ─────────────────────
+  const { rows: adminRows } = await conn.query('SELECT COUNT(*) FROM admin_users');
+  if (parseInt(adminRows[0].count) === 0) {
+    await conn.query(
+      `INSERT INTO admin_users (email, password) VALUES ($1, $2)`,
+      ['admin@manabeaalkhair.org', hashPassword('Admin@2024')]
+    );
+    console.log('Default admin user created: admin@manabeaalkhair.org / Admin@2024');
+  } else {
+    console.log('Admin user already exists — skipping seed.');
+  }
 
   // ── Default site content ────────────────────────────────────────────────
   const siteRows = [
