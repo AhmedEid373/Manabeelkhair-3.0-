@@ -1,21 +1,10 @@
 'use strict';
 
 // Run once to create tables and insert the default admin user.
-// Usage: DATABASE_URL=mysql://... node server/seed.js
+// Usage: DATABASE_URL=postgresql://... node server/seed.js
 
-const mysql = require('mysql2/promise');
+const { Client } = require('pg');
 const crypto = require('crypto');
-
-function parseDbUrl(url) {
-  const u = new URL(url);
-  return {
-    host:     u.hostname,
-    port:     parseInt(u.port, 10) || 3306,
-    user:     decodeURIComponent(u.username),
-    password: decodeURIComponent(u.password),
-    database: u.pathname.replace(/^\//, ''),
-  };
-}
 
 function hashPassword(password) {
   const salt = crypto.randomBytes(16).toString('hex');
@@ -25,92 +14,116 @@ function hashPassword(password) {
 
 async function seed(externalPool) {
   // When called from index.js, use the shared pool; when run as CLI, create a dedicated connection.
-  const conn = externalPool || await mysql.createConnection(parseDbUrl(process.env.DATABASE_URL));
+  let conn;
+  if (externalPool) {
+    conn = externalPool;
+  } else {
+    conn = new Client({ connectionString: process.env.DATABASE_URL });
+    await conn.connect();
+  }
   const ownConnection = !externalPool;
 
   // ── Admin users ───────────────────────────────────────────────────────────
-  await conn.execute(`
+  await conn.query(`
     CREATE TABLE IF NOT EXISTS admin_users (
-      id           VARCHAR(36)  NOT NULL DEFAULT (UUID()) PRIMARY KEY,
-      email        VARCHAR(255) NOT NULL UNIQUE,
-      password     VARCHAR(255) NOT NULL,
-      created_at   DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP
-    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4
+      id         UUID         NOT NULL DEFAULT gen_random_uuid() PRIMARY KEY,
+      email      VARCHAR(255) NOT NULL UNIQUE,
+      password   VARCHAR(255) NOT NULL,
+      created_at TIMESTAMP    NOT NULL DEFAULT NOW()
+    )
   `);
 
   // ── Contacts ──────────────────────────────────────────────────────────────
-  await conn.execute(`
+  await conn.query(`
     CREATE TABLE IF NOT EXISTS contacts (
-      id           VARCHAR(36)  NOT NULL DEFAULT (UUID()) PRIMARY KEY,
-      name         VARCHAR(255) NOT NULL,
-      email        VARCHAR(255) NOT NULL,
-      phone        VARCHAR(50)  NOT NULL,
-      type         ENUM('donation','volunteer','inquiry','partnership','helper','needer') NOT NULL,
-      message      TEXT,
-      location     VARCHAR(255),
-      status       ENUM('pending','in_progress','completed','cancelled') NOT NULL DEFAULT 'pending',
-      notes        TEXT,
-      created_at   DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP,
-      updated_at   DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
-    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4
+      id         UUID         NOT NULL DEFAULT gen_random_uuid() PRIMARY KEY,
+      name       VARCHAR(255) NOT NULL,
+      email      VARCHAR(255) NOT NULL,
+      phone      VARCHAR(50)  NOT NULL,
+      type       VARCHAR(50)  NOT NULL CHECK (type IN ('donation','volunteer','inquiry','partnership','helper','needer')),
+      message    TEXT,
+      location   VARCHAR(255),
+      status     VARCHAR(50)  NOT NULL DEFAULT 'pending' CHECK (status IN ('pending','in_progress','completed','cancelled')),
+      notes      TEXT,
+      created_at TIMESTAMP    NOT NULL DEFAULT NOW(),
+      updated_at TIMESTAMP    NOT NULL DEFAULT NOW()
+    )
   `);
 
   // ── Donation requests ─────────────────────────────────────────────────────
-  await conn.execute(`
+  await conn.query(`
     CREATE TABLE IF NOT EXISTS donation_requests (
-      id              VARCHAR(36)  NOT NULL DEFAULT (UUID()) PRIMARY KEY,
+      id              UUID         NOT NULL DEFAULT gen_random_uuid() PRIMARY KEY,
       full_name       VARCHAR(255) NOT NULL,
       email           VARCHAR(255) NOT NULL,
       phone           VARCHAR(50)  NOT NULL,
       amount          VARCHAR(50)  NOT NULL,
       donation_method VARCHAR(100) NOT NULL,
       allocation      VARCHAR(255),
-      privacy_agreed  TINYINT(1)   NOT NULL DEFAULT 0,
-      status          ENUM('pending','in_progress','completed','cancelled') NOT NULL DEFAULT 'pending',
+      privacy_agreed  BOOLEAN      NOT NULL DEFAULT FALSE,
+      status          VARCHAR(50)  NOT NULL DEFAULT 'pending' CHECK (status IN ('pending','in_progress','completed','cancelled')),
       admin_notes     TEXT,
-      created_at      DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP
-    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4
+      created_at      TIMESTAMP    NOT NULL DEFAULT NOW()
+    )
   `);
 
   // ── Volunteer requests ────────────────────────────────────────────────────
-  await conn.execute(`
+  await conn.query(`
     CREATE TABLE IF NOT EXISTS volunteer_requests (
-      id              VARCHAR(36)  NOT NULL DEFAULT (UUID()) PRIMARY KEY,
-      full_name       VARCHAR(255) NOT NULL,
-      age             VARCHAR(10)  NOT NULL,
-      email           VARCHAR(255) NOT NULL,
-      phone           VARCHAR(50)  NOT NULL,
-      region          VARCHAR(255) NOT NULL,
-      skills          TEXT         NOT NULL,
-      availability    VARCHAR(255) NOT NULL,
-      volunteer_type  VARCHAR(100) NOT NULL,
-      notes           TEXT,
-      terms_agreed    TINYINT(1)   NOT NULL DEFAULT 0,
-      status          ENUM('pending','in_progress','completed','cancelled') NOT NULL DEFAULT 'pending',
-      admin_notes     TEXT,
-      created_at      DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP
-    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4
+      id             UUID         NOT NULL DEFAULT gen_random_uuid() PRIMARY KEY,
+      full_name      VARCHAR(255) NOT NULL,
+      age            VARCHAR(10)  NOT NULL,
+      email          VARCHAR(255) NOT NULL,
+      phone          VARCHAR(50)  NOT NULL,
+      region         VARCHAR(255) NOT NULL,
+      skills         TEXT         NOT NULL,
+      availability   VARCHAR(255) NOT NULL,
+      volunteer_type VARCHAR(100) NOT NULL,
+      notes          TEXT,
+      terms_agreed   BOOLEAN      NOT NULL DEFAULT FALSE,
+      status         VARCHAR(50)  NOT NULL DEFAULT 'pending' CHECK (status IN ('pending','in_progress','completed','cancelled')),
+      admin_notes    TEXT,
+      created_at     TIMESTAMP    NOT NULL DEFAULT NOW()
+    )
   `);
 
   // ── Site content ──────────────────────────────────────────────────────────
-  await conn.execute(`
+  await conn.query(`
     CREATE TABLE IF NOT EXISTS site_content (
-      id            VARCHAR(36)  NOT NULL DEFAULT (UUID()) PRIMARY KEY,
+      id            UUID         NOT NULL DEFAULT gen_random_uuid() PRIMARY KEY,
       section_key   VARCHAR(255) NOT NULL UNIQUE,
       content_ar    TEXT         NOT NULL,
       content_en    TEXT         NOT NULL,
       content_type  VARCHAR(50)  NOT NULL DEFAULT 'text',
       section_group VARCHAR(100) NOT NULL DEFAULT 'general',
-      updated_at    DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+      updated_at    TIMESTAMP    NOT NULL DEFAULT NOW(),
       updated_by    VARCHAR(255)
-    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4
+    )
+  `);
+
+  // ── auto-update updated_at on contacts and site_content ──────────────────
+  await conn.query(`
+    CREATE OR REPLACE FUNCTION update_updated_at_column()
+    RETURNS TRIGGER AS $$
+    BEGIN NEW.updated_at = NOW(); RETURN NEW; END;
+    $$ LANGUAGE plpgsql
+  `);
+  await conn.query(`
+    CREATE OR REPLACE TRIGGER trg_contacts_updated_at
+      BEFORE UPDATE ON contacts
+      FOR EACH ROW EXECUTE FUNCTION update_updated_at_column()
+  `);
+  await conn.query(`
+    CREATE OR REPLACE TRIGGER trg_site_content_updated_at
+      BEFORE UPDATE ON site_content
+      FOR EACH ROW EXECUTE FUNCTION update_updated_at_column()
   `);
 
   // ── Default admin user ────────────────────────────────────────────────────
-  await conn.execute(
+  await conn.query(
     `INSERT INTO admin_users (email, password)
-     VALUES (?, ?)
-     ON DUPLICATE KEY UPDATE password = VALUES(password)`,
+     VALUES ($1, $2)
+     ON CONFLICT (email) DO UPDATE SET password = EXCLUDED.password`,
     ['admin@manabeaalkhair.org', hashPassword('Admin@2024')]
   );
   console.log('Default admin user upserted: admin@manabeaalkhair.org / Admin@2024');
@@ -239,10 +252,11 @@ async function seed(externalPool) {
     ['privacy.section3Title', 'الشفافية والتقارير', 'Transparency & Reporting', 'text', 'privacy'],
   ];
 
-  // INSERT IGNORE so re-running seed won't duplicate rows (section_key is UNIQUE)
+  // ON CONFLICT DO NOTHING so re-running seed won't duplicate rows (section_key is UNIQUE)
   for (const [section_key, content_ar, content_en, content_type, section_group] of siteRows) {
-    await conn.execute(
-      `INSERT IGNORE INTO site_content (section_key, content_ar, content_en, content_type, section_group) VALUES (?, ?, ?, ?, ?)`,
+    await conn.query(
+      `INSERT INTO site_content (section_key, content_ar, content_en, content_type, section_group)
+       VALUES ($1, $2, $3, $4, $5) ON CONFLICT (section_key) DO NOTHING`,
       [section_key, content_ar, content_en, content_type, section_group]
     );
   }

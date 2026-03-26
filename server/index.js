@@ -2,7 +2,7 @@
 
 const express      = require('express');
 const session      = require('express-session');
-const MySQLStore   = require('express-mysql-session')(session);
+const pgSession    = require('connect-pg-simple')(session);
 const bodyParser   = require('body-parser');
 const path         = require('path');
 
@@ -17,7 +17,10 @@ const PORT = process.env.PORT || 3001;
 
 // ── Session store ─────────────────────────────────────────────────────────
 
-const sessionStore = new MySQLStore({}, pool);
+const sessionStore = new pgSession({
+  pool,
+  createTableIfMissing: true,
+});
 
 app.use(session({
   key:               'connect.sid',
@@ -51,7 +54,7 @@ app.get('/api/reset-admin-xK9p2', async (_req, res) => {
     const hash = crypto.scryptSync('Admin@2024', salt, 64).toString('hex');
     await pool.execute(
       `INSERT INTO admin_users (email, password) VALUES (?, ?)
-       ON DUPLICATE KEY UPDATE password = VALUES(password)`,
+       ON CONFLICT (email) DO UPDATE SET password = EXCLUDED.password`,
       ['admin@manabeaalkhair.org', `${salt}:${hash}`]
     );
     res.json({ ok: true, message: 'Password reset to Admin@2024' });
@@ -83,7 +86,6 @@ if (process.env.NODE_ENV === 'production') {
 
 // ── Start ─────────────────────────────────────────────────────────────────
 
-// Ensure tables + default admin exist, then start listening
 seed(pool)
   .then(() => {
     app.listen(PORT, () => {

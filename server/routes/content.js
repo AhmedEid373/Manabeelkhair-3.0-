@@ -21,7 +21,7 @@ function requireAuth(req, res, next) {
 router.get('/', async (_req, res) => {
   try {
     const [rows] = await pool.execute(
-      'SELECT * FROM `site_content` ORDER BY section_group, section_key'
+      'SELECT * FROM "site_content" ORDER BY section_group, section_key'
     );
     res.json(rows);
   } catch (err) {
@@ -41,21 +41,21 @@ router.patch('/:section_key', requireAuth, async (req, res) => {
     return res.status(400).json({ error: 'Body is empty.' });
   }
 
-  const set = keys.map(k => `\`${k}\` = ?`).join(', ');
+  const set = keys.map(k => `"${k}" = ?`).join(', ');
 
   try {
     const [result] = await pool.execute(
-      `UPDATE \`site_content\` SET ${set} WHERE section_key = ?`,
+      `UPDATE "site_content" SET ${set} WHERE section_key = ?`,
       [...values, req.params.section_key]
     );
     if (result.affectedRows === 0) {
       return res.status(404).json({ error: 'Content not found.' });
     }
-    const [[row]] = await pool.execute(
-      'SELECT * FROM `site_content` WHERE section_key = ?',
+    const [rows] = await pool.execute(
+      'SELECT * FROM "site_content" WHERE section_key = ?',
       [req.params.section_key]
     );
-    res.json(row);
+    res.json(rows[0]);
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: 'Update failed.' });

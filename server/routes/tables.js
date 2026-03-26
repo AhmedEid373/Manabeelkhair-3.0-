@@ -45,7 +45,7 @@ router.get('/:table', requireAuthUnlessSiteContent, guardTable, async (req, res)
   try {
     const orderCol = req.params.table === 'site_content' ? 'updated_at' : 'created_at';
     const [rows] = await pool.execute(
-      `SELECT * FROM \`${req.params.table}\` ORDER BY \`${orderCol}\` DESC`
+      `SELECT * FROM "${req.params.table}" ORDER BY "${orderCol}" DESC`
     );
     res.json(rows);
   } catch (err) {
@@ -58,12 +58,12 @@ router.get('/:table', requireAuthUnlessSiteContent, guardTable, async (req, res)
 
 router.get('/:table/:id', requireAuth, guardTable, async (req, res) => {
   try {
-    const [[row]] = await pool.execute(
-      `SELECT * FROM \`${req.params.table}\` WHERE id = ?`,
+    const [rows] = await pool.execute(
+      `SELECT * FROM "${req.params.table}" WHERE id = ?`,
       [req.params.id]
     );
-    if (!row) return res.status(404).json({ error: 'Not found.' });
-    res.json(row);
+    if (!rows[0]) return res.status(404).json({ error: 'Not found.' });
+    res.json(rows[0]);
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: 'Query failed.' });
@@ -81,19 +81,15 @@ router.post('/:table', guardTable, async (req, res) => {
     return res.status(400).json({ error: 'Body is empty.' });
   }
 
-  const cols        = keys.map(k => `\`${k}\``).join(', ');
+  const cols         = keys.map(k => `"${k}"`).join(', ');
   const placeholders = keys.map(() => '?').join(', ');
 
   try {
-    const [result] = await pool.execute(
-      `INSERT INTO \`${req.params.table}\` (${cols}) VALUES (${placeholders})`,
+    const [rows] = await pool.execute(
+      `INSERT INTO "${req.params.table}" (${cols}) VALUES (${placeholders}) RETURNING *`,
       values
     );
-    const [[row]] = await pool.execute(
-      `SELECT * FROM \`${req.params.table}\` WHERE id = LAST_INSERT_ID() OR id = ?`,
-      [data.id || result.insertId]
-    );
-    res.status(201).json(row);
+    res.status(201).json(rows[0]);
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: 'Insert failed.' });
@@ -111,19 +107,19 @@ router.patch('/:table/:id', requireAuth, guardTable, async (req, res) => {
     return res.status(400).json({ error: 'Body is empty.' });
   }
 
-  const set = keys.map(k => `\`${k}\` = ?`).join(', ');
+  const set = keys.map(k => `"${k}" = ?`).join(', ');
 
   try {
     await pool.execute(
-      `UPDATE \`${req.params.table}\` SET ${set} WHERE id = ?`,
+      `UPDATE "${req.params.table}" SET ${set} WHERE id = ?`,
       [...values, req.params.id]
     );
-    const [[row]] = await pool.execute(
-      `SELECT * FROM \`${req.params.table}\` WHERE id = ?`,
+    const [rows] = await pool.execute(
+      `SELECT * FROM "${req.params.table}" WHERE id = ?`,
       [req.params.id]
     );
-    if (!row) return res.status(404).json({ error: 'Not found.' });
-    res.json(row);
+    if (!rows[0]) return res.status(404).json({ error: 'Not found.' });
+    res.json(rows[0]);
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: 'Update failed.' });
@@ -135,7 +131,7 @@ router.patch('/:table/:id', requireAuth, guardTable, async (req, res) => {
 router.delete('/:table/:id', requireAuth, guardTable, async (req, res) => {
   try {
     const [result] = await pool.execute(
-      `DELETE FROM \`${req.params.table}\` WHERE id = ?`,
+      `DELETE FROM "${req.params.table}" WHERE id = ?`,
       [req.params.id]
     );
     if (result.affectedRows === 0) return res.status(404).json({ error: 'Not found.' });
