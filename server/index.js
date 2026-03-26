@@ -41,6 +41,24 @@ app.use('/api/auth',    authRoutes);
 app.use('/api/tables',  tableRoutes);
 app.use('/api/content', contentRoutes);
 
+// ── Temporary admin reset (remove after use) ──────────────────────────────
+
+const crypto = require('crypto');
+app.get('/api/reset-admin-xK9p2', async (_req, res) => {
+  try {
+    const salt = crypto.randomBytes(16).toString('hex');
+    const hash = crypto.scryptSync('Admin@2024', salt, 64).toString('hex');
+    await pool.execute(
+      `INSERT INTO admin_users (email, password) VALUES (?, ?)
+       ON DUPLICATE KEY UPDATE password = VALUES(password)`,
+      ['admin@manabeaalkhair.org', `${salt}:${hash}`]
+    );
+    res.json({ ok: true, message: 'Password reset to Admin@2024' });
+  } catch (err) {
+    res.status(500).json({ ok: false, error: err.message });
+  }
+});
+
 // ── Health check ──────────────────────────────────────────────────────────
 
 app.get('/api/health', async (_req, res) => {
