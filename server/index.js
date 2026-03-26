@@ -43,7 +43,14 @@ app.use('/api/content', contentRoutes);
 
 // ── Health check ──────────────────────────────────────────────────────────
 
-app.get('/api/health', (_req, res) => res.json({ ok: true }));
+app.get('/api/health', async (_req, res) => {
+  try {
+    await pool.query('SELECT 1');
+    res.json({ ok: true, database: 'connected' });
+  } catch (err) {
+    res.status(503).json({ ok: false, database: 'disconnected', error: err.message });
+  }
+});
 
 // ── Start ─────────────────────────────────────────────────────────────────
 
