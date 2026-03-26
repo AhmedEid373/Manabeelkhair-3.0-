@@ -1,34 +1,19 @@
 'use strict';
 
-const mysql = require('mysql2/promise');
+const { Pool } = require('pg');
 
-function parseDbUrl(url) {
-  const u = new URL(url);
-  return {
-    host:     u.hostname,
-    port:     parseInt(u.port, 10) || 3306,
-    user:     decodeURIComponent(u.username),
-    password: decodeURIComponent(u.password),
-    database: u.pathname.replace(/^\//, ''),
-  };
-}
+const pool = new Pool({ connectionString: process.env.DATABASE_URL });
 
-const config = parseDbUrl(process.env.DATABASE_URL);
-
-const pool = mysql.createPool({
-  ...config,
-  waitForConnections: true,
-  connectionLimit:    10,
-  queueLimit:         0,
-  typeCast: function (field, next) {
-    if (field.type === 'TINY' && field.length === 1) {
-      return field.string() === '1';
-    }
-    return next();
-  },
-  dateStrings: true,
-  timezone:    '+00:00',
-  charset:     'utf8mb4',
-});
+// Emulate mysql2 pool.execute interface used throughout the route files:
+//   - converts ? placeholders to $1, $2, ...
+//   - returns [rows] where rows.affectedRows = rowCount
+pool.execute = async function execute(sql, params) {
+  let i = 0;
+  const pgSql = sql.replace(/\?/g, () => `$${++i}`);
+  const result = await pool.query(pgSql, params || []);
+  const rows = result.rows;
+  rows.affectedRows = result.rowCount;
+  return [rows];
+};
 
 module.exports = pool;
