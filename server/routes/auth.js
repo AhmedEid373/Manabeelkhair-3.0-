@@ -67,4 +67,64 @@ router.get('/me', (req, res) => {
   return res.json({ ok: true, email: req.session.email });
 });
 
+// ── PATCH /api/auth/profile — update email and/or password ───────────────
+
+router.patch('/profile', async (req, res) => {
+  if (!req.session.userId) {
+    return res.status(401).json({ error: 'Not authenticated.' });
+  }
+
+  const { currentPassword, newEmail, newPassword } = req.body || {};
+
+  if (!currentPassword) {
+    return res.status(400).json({ error: 'Current password is required.' });
+  }
+  if (!newEmail && !newPassword) {
+    return res.status(400).json({ error: 'Provide a new email or new password.' });
+  }
+
+  try {
+    const [[user]] = await pool.execute(
+      'SELECT id, email, password FROM admin_users WHERE id = ?',
+      [req.session.userId]
+    );
+
+    if (!user || !verifyPassword(currentPassword, user.password)) {
+      return res.status(401).json({ error: 'كلمة المرور الحالية غير صحيحة.' });
+    }
+
+    if (newEmail && newEmail !== user.email) {
+      const [[existing]] = await pool.execute(
+        'SELECT id FROM admin_users WHERE email = ? AND id != ?',
+        [newEmail, req.session.userId]
+      );
+      if (existing) {
+        return res.status(409).json({ error: 'هذا البريد الإلكتروني مستخدم بالفعل.' });
+      }
+    }
+
+    const updatedEmail = newEmail || user.email;
+    let updatedPassword = user.password;
+
+    if (newPassword) {
+      const salt = crypto.randomBytes(16).toString('hex');
+      const hash = crypto.scryptSync(newPassword, salt, 64).toString('hex');
+      updatedPassword = `${salt}:${hash}`;
+    }
+
+    await pool.execute(
+      'UPDATE admin_users SET email = ?, password = ? WHERE id = ?',
+      [updatedEmail, updatedPassword, req.session.userId]
+    );
+
+    req.session.email = updatedEmail;
+    req.session.save(() => {
+      res.json({ ok: true, email: updatedEmail });
+    });
+  } catch (err) {
+    console.error('Profile update error:', err);
+    return res.status(500).json({ error: 'Internal server error.' });
+  }
+});
+
 module.exports = router;

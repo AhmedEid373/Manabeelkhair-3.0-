@@ -7,12 +7,14 @@ import { ContactsTab } from '../components/dashboard/ContactsTab';
 import { DonationsTab } from '../components/dashboard/DonationsTab';
 import { VolunteersTab } from '../components/dashboard/VolunteersTab';
 import { SiteContentTab } from '../components/dashboard/SiteContentTab';
-import { MessageSquare, Heart, Users, Layout } from 'lucide-react';
+import { SettingsTab } from '../components/dashboard/SettingsTab';
+import { MessageSquare, Heart, Users, Layout, Settings } from 'lucide-react';
 
-type Tab = 'contacts' | 'donations' | 'volunteers' | 'site_content';
+type Tab = 'contacts' | 'donations' | 'volunteers' | 'site_content' | 'settings';
 
 export function Dashboard() {
   const { user, signIn } = useAuth();
+  const [adminEmail, setAdminEmail] = useState(user?.email || '');
 
   const [contacts, setContacts] = useState<Contact[]>([]);
   const [donations, setDonations] = useState<DonationRequest[]>([]);
@@ -68,6 +70,7 @@ export function Dashboard() {
     { id: 'donations', label: 'طلبات التبرع', icon: <Heart className="w-5 h-5" />, count: donations.length },
     { id: 'volunteers', label: 'طلبات التطوع', icon: <Users className="w-5 h-5" />, count: volunteers.length },
     { id: 'site_content', label: 'محتوى الموقع', icon: <Layout className="w-5 h-5" />, count: 0 },
+    { id: 'settings', label: 'الإعدادات', icon: <Settings className="w-5 h-5" />, count: 0 },
   ];
 
   return (
@@ -97,7 +100,7 @@ export function Dashboard() {
                 )}
                 {tab.icon}
                 <span>{tab.label}</span>
-                {tab.id !== 'site_content' && (
+                {tab.id !== 'site_content' && tab.id !== 'settings' && (
                   <span className={`text-xs font-bold px-2 py-0.5 rounded-full ${
                     activeTab === tab.id
                       ? 'bg-brand-600 text-white'
@@ -121,6 +124,7 @@ export function Dashboard() {
                 {activeTab === 'donations' && <DonationsTab donations={donations} onRefresh={fetchAll} />}
                 {activeTab === 'volunteers' && <VolunteersTab volunteers={volunteers} onRefresh={fetchAll} />}
                 {activeTab === 'site_content' && <SiteContentTab onRefresh={fetchAll} />}
+                {activeTab === 'settings' && <SettingsTab currentEmail={adminEmail} onEmailChange={setAdminEmail} />}
               </>
             )}
           </div>
