@@ -1,23 +1,17 @@
 #!/bin/sh
 set -e
 
-echo "Waiting for MySQL to be ready..."
+echo "Waiting for PostgreSQL to be ready..."
 for i in $(seq 1 30); do
   if node -e "
-    const mysql = require('mysql2/promise');
-    const u = new URL(process.env.DATABASE_URL);
-    mysql.createConnection({
-      host: u.hostname,
-      port: parseInt(u.port, 10) || 3306,
-      user: decodeURIComponent(u.username),
-      password: decodeURIComponent(u.password),
-      database: u.pathname.replace(/^\\//, '')
-    }).then(c => { c.end(); process.exit(0); }).catch(() => process.exit(1));
+    const { Client } = require('pg');
+    const client = new Client({ connectionString: process.env.DATABASE_URL });
+    client.connect().then(() => { client.end(); process.exit(0); }).catch(() => process.exit(1));
   " 2>/dev/null; then
-    echo "MySQL is ready!"
+    echo "PostgreSQL is ready!"
     break
   fi
-  echo "MySQL not ready yet... retrying ($i/30)"
+  echo "PostgreSQL not ready yet... retrying ($i/30)"
   sleep 2
 done
 
