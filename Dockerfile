@@ -6,20 +6,30 @@ RUN npm ci
 COPY . .
 RUN npm run build
 
-# ── Stage 2: Runtime (Node only) ─────────────────────────────────────────
+# ── Stage 2: Runtime (Nginx + Node API) ──────────────────────────────────
 FROM node:18-alpine AS runtime
-WORKDIR /app
+
+# Install Nginx
+RUN apk add --no-cache nginx curl
 
 # Copy built React assets
-COPY --from=build /app/dist ./dist
+COPY --from=build /app/dist /usr/share/nginx/html
+
+# Copy Nginx config
+COPY nginx.conf /etc/nginx/http.d/default.conf
 
 # Install only production server dependencies
-COPY server/package.json ./server/
-RUN cd server && npm install --omit=dev
+WORKDIR /app/server
+COPY server/package.json ./
+RUN npm install --omit=dev
+COPY server/ ./
 
-# Copy server source
-COPY server/ ./server/
+# Copy dist so Express can serve it too (fallback)
+COPY --from=build /app/dist /app/dist
 
-EXPOSE 3001
+# Startup script
+COPY docker-entrypoint.sh /docker-entrypoint.sh
+RUN chmod +x /docker-entrypoint.sh
 
-CMD ["node", "server/index.js"]
+EXPOSE 80
+CMD ["/docker-entrypoint.sh"]
