@@ -40,7 +40,7 @@ export function DashboardLogin({ loginForm, setLoginForm, loginError, onSubmit }
               value={loginForm.email}
               onChange={(e) => setLoginForm({ ...loginForm, email: e.target.value })}
               className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-xl focus:ring-2 focus:ring-brand-500 focus:border-transparent transition-all"
-              placeholder="admin@manabeaalkhair.org"
+              placeholder="أدخل بريدك الإلكتروني"
               dir="ltr"
             />
           </div>
