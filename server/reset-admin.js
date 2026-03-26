@@ -1,7 +1,7 @@
 'use strict';
 
 // Run this script to reset the admin password:
-// DATABASE_URL=mysql://... node server/reset-admin.js
+// DATABASE_URL=postgresql://... node server/reset-admin.js
 
 const crypto = require('crypto');
 const pool   = require('./db');
@@ -18,10 +18,10 @@ function hashPassword(password) {
 async function resetAdmin() {
   const hashed = hashPassword(PASSWORD);
 
-  const [result] = await pool.execute(
+  await pool.execute(
     `INSERT INTO admin_users (email, password)
      VALUES (?, ?)
-     ON DUPLICATE KEY UPDATE password = VALUES(password)`,
+     ON CONFLICT (email) DO UPDATE SET password = EXCLUDED.password`,
     [EMAIL, hashed]
   );
 

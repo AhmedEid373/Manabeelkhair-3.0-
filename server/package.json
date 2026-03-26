@@ -2,9 +2,9 @@
   "type": "commonjs",
   "dependencies": {
     "body-parser": "^1.20.3",
+    "connect-pg-simple": "^9.0.1",
     "express": "^4.19.2",
-    "express-mysql-session": "^3.0.0",
     "express-session": "^1.18.0",
-    "mysql2": "^3.9.4"
+    "pg": "^8.11.5"
   }
 }
