@@ -1,5 +1,5 @@
 // ─────────────────────────────────────────────────────────────────────────────
-// API-backed database client — all data persists in MySQL via the backend.
+// API-backed database client — all data persists in PostgreSQL via the backend.
 // Replaces the previous localStorage-only implementation.
 // Admin credentials: admin@manabeaalkhair.org / Admin@2024
 // ─────────────────────────────────────────────────────────────────────────────

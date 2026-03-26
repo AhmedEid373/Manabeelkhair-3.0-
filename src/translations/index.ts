@@ -2,8 +2,6 @@ export const translations = {
   ar: {
     brand: {
       name: 'جمعية منابع الخير',
-      tagline: 'نصنع الخير ونجعل العطاء أسلوب حياة',
-      description: 'دعم كبار السن والذين لا يستطيعون تحمل تكاليف الأدوية من خلال التعاطف المجتمعي والجهود التطوعية',
     },
     nav: {
       home: 'الرئيسية',
@@ -40,8 +38,6 @@ export const translations = {
       step2Desc: 'يقوم متطوعونا بمراجعة الطلبات ومطابقة المساعدين مع المحتاجين بناءً على الموقع والمتطلبات.',
       step3Title: 'تقديم المساعدة',
       step3Desc: 'يتم تقديم الدعم بسرعة، سواء كان دواءً أو مساعدة أو مجرد محادثة رعاية.',
-      impactStories: 'قصص التأثير',
-      impactStoriesDesc: 'قصص حقيقية من مجتمعنا',
       ctaTitle: 'هل أنت مستعد لإحداث فرق؟',
       ctaDesc: 'سواء كنت بحاجة إلى مساعدة أو تريد التطوع، نحن هنا للمساعدة في ربط مجتمعنا.',
       getStarted: 'ابدأ اليوم',
@@ -111,7 +107,6 @@ export const translations = {
       title: 'تواصل معنا',
       subtitle: 'سواء كنت بحاجة إلى مساعدة أو تريد التطوع، نحن هنا لربطك بمجتمعنا.',
       contactInfo: 'معلومات الاتصال',
-      contactInfoDesc: 'املأ النموذج وسيتواصل معك فريقنا في غضون 24 ساعة. نحن ملتزمون بالرد على كل طلب في اسرع وقت',
       headOffice: 'المقر الرئيسي',
       headOfficeAddress: '١١، ١٦٢ (ب)، شارع ١٠٥\nالطابق الأرضي – المعادي، القاهرة',
       associationPhone: 'هاتف الجمعية',
@@ -150,9 +145,6 @@ export const translations = {
       successMsg: 'تم إرسال طلبك. سنتواصل معك قريباً.',
       errorTitle: 'خطأ',
       errorMsg: 'حدث خطأ أثناء الإرسال. يرجى المحاولة مرة أخرى.',
-      email: 'البريد الإلكتروني',
-      phone: 'الهاتف',
-      serviceArea: 'منطقة الخدمة',
     },
     donate: {
       title: 'تبرع الآن, ساهم في رسم بصمة أمل',
@@ -184,8 +176,6 @@ export const translations = {
       coordinationNote: 'للتنسيق بشأن الطلبات الميدانية، الإيصالات، أو أي استفسارات تتعلق بالتبرعات',
       receiptTitle: 'تأكيد واستلام الإيصال',
       receiptDesc: 'عند استلام التبرع بأي طريقة، تلتزم جمعية منابع الخير بإصدار إيصال رسمي يضم تفاصيل التبرع (الاسم، المبلغ، الغرض إن وُجد، وتاريخ الاستلام). كما نوفّر إمكانية إرسال تقرير متابعة حول أثر المشروع الذي دعمته عند الطلب.',
-      receiptOfficial: 'إيصال رسمي',
-      receiptReport: 'تقرير متابعة',
       importantNotesTitle: 'ملاحظات مهمة',
       importantNote1: 'نحرص على احترام خصوصية المتبرعين؛ تُستخدم البيانات فقط لأغراض التواصل وإصدار الإيصالات والتقارير المتعلقة بالتبرعات، ولا تُشارك مع أي طرف ثالث دون موافقة صريحة.',
       importantNote2: 'في حال رغبتم بإجراء تحويل من خارج مصر، يُرجى مراعاة ذكر اسم المتبرع والهدف في خانة البيان عند التحويل لإمكانية مطابقة الإيصالات بسرعة.',
@@ -331,8 +321,6 @@ export const translations = {
   en: {
     brand: {
       name: 'Manabea Al-Khair Association',
-      tagline: 'Spreading Goodness, Making Giving a Way of Life',
-      description: 'Supporting the elderly and those who cannot afford medication through community compassion and volunteer efforts',
     },
     nav: {
       home: 'Home',
@@ -369,8 +357,6 @@ export const translations = {
       step2Desc: 'Our volunteers review requests and match helpers with those in need based on location and requirements.',
       step3Title: 'Support Delivered',
       step3Desc: 'Support is delivered quickly, whether it is medicine, assistance, or just a caring conversation.',
-      impactStories: 'Impact Stories',
-      impactStoriesDesc: 'Real stories from our community',
       ctaTitle: 'Ready to Make a Difference?',
       ctaDesc: 'Whether you need help or want to volunteer, we are here to help connect our community.',
       getStarted: 'Get Started Today',
@@ -440,7 +426,6 @@ export const translations = {
       title: 'Contact Us',
       subtitle: 'Whether you need help or want to volunteer, we are here to connect you with our community.',
       contactInfo: 'Contact Information',
-      contactInfoDesc: 'Fill out the form and our team will contact you within 24 hours. We are committed to responding to every request as quickly as possible.',
       headOffice: 'Head Office',
       headOfficeAddress: '11, 162 (B), Street 105\nGround Floor – Maadi, Cairo',
       associationPhone: 'Association Phone',
@@ -479,9 +464,6 @@ export const translations = {
       successMsg: 'Your request has been submitted. We will contact you soon.',
       errorTitle: 'Error',
       errorMsg: 'An error occurred while sending. Please try again.',
-      email: 'Email',
-      phone: 'Phone',
-      serviceArea: 'Service Area',
     },
     donate: {
       title: 'Donate Now, Help Shape a Story of Hope',
@@ -513,8 +495,6 @@ export const translations = {
       coordinationNote: 'For coordination regarding field requests, receipts, or any donation-related inquiries',
       receiptTitle: 'Receipt Confirmation',
       receiptDesc: 'Upon receiving a donation by any method, Manabea Al-Khair Association commits to issuing an official receipt containing donation details (name, amount, purpose if specified, and receipt date). We also provide the option to send a follow-up report on the impact of the project you supported upon request.',
-      receiptOfficial: 'official receipt',
-      receiptReport: 'follow-up report',
       importantNotesTitle: 'Important Notes',
       importantNote1: 'We are committed to respecting donors\' privacy; data is used only for communication purposes, issuing receipts and reports related to donations, and is not shared with any third party without explicit consent.',
       importantNote2: 'If you wish to make a transfer from outside Egypt, please include the donor\'s name and purpose in the statement field when transferring to enable quick receipt matching.',

@@ -10,7 +10,6 @@ const pool         = require('./db');
 const { seed }      = require('./seed');
 const authRoutes    = require('./routes/auth');
 const tableRoutes   = require('./routes/tables');
-const contentRoutes = require('./routes/content');
 
 const app  = express();
 const PORT = process.env.PORT || 3001;
@@ -45,25 +44,6 @@ app.use(bodyParser.json());
 
 app.use('/api/auth',    authRoutes);
 app.use('/api/tables',  tableRoutes);
-app.use('/api/content', contentRoutes);
-
-// ── Temporary admin reset (remove after use) ──────────────────────────────
-
-const crypto = require('crypto');
-app.get('/api/reset-admin-xK9p2', async (_req, res) => {
-  try {
-    const salt = crypto.randomBytes(16).toString('hex');
-    const hash = crypto.scryptSync('Admin@2024', salt, 64).toString('hex');
-    await pool.execute(
-      `INSERT INTO admin_users (email, password) VALUES (?, ?)
-       ON CONFLICT (email) DO UPDATE SET password = EXCLUDED.password`,
-      ['admin@manabeaalkhair.org', `${salt}:${hash}`]
-    );
-    res.json({ ok: true, message: 'Password reset to Admin@2024' });
-  } catch (err) {
-    res.status(500).json({ ok: false, error: err.message });
-  }
-});
 
 // ── Health check ──────────────────────────────────────────────────────────
 

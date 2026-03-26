@@ -4,7 +4,7 @@ const { Pool } = require('pg');
 
 const pool = new Pool({ connectionString: process.env.DATABASE_URL });
 
-// Emulate mysql2 pool.execute interface used throughout the route files:
+// pool.execute compatibility wrapper:
 //   - converts ? placeholders to $1, $2, ...
 //   - returns [rows] where rows.affectedRows = rowCount
 pool.execute = async function execute(sql, params) {
