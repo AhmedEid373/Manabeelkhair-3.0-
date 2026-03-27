@@ -1,4 +1,4 @@
-import { Contact, DonationRequest, VolunteerRequest } from '../../lib/supabase';
+import { Contact, DonationRequest, VolunteerRequest } from '../../lib/api';
 import { MessageSquare, Heart, Users, Clock } from 'lucide-react';
 
 interface Props {

@@ -266,7 +266,7 @@ const apiAuth = {
 
 // ── Public client ─────────────────────────────────────────────────────────────
 
-export const supabase = {
+export const db = {
   from(table: string) {
     return new TableRef(table);
   },

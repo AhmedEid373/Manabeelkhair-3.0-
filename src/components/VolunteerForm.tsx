@@ -3,7 +3,7 @@ import {
   Send, CheckCircle, AlertCircle, User, Mail, Phone,
   MapPin, Briefcase, Clock, Heart, MessageSquare, Users
 } from 'lucide-react';
-import { supabase } from '../lib/supabase';
+import { db } from '../lib/api';
 import { useLanguage } from '../contexts/LanguageContext';
 
 interface FormState {
@@ -69,7 +69,7 @@ export function VolunteerForm() {
 
     setLoading(true);
     try {
-      const { error: dbError } = await supabase.from('volunteer_requests').insert([{
+      const { error: dbError } = await db.from('volunteer_requests').insert([{
         full_name: form.full_name,
         age: form.age,
         email: form.email,

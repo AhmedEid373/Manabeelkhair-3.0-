@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { supabase, SiteContent } from '../../lib/supabase';
+import { db, SiteContent } from '../../lib/api';
 import { Save, Check, AlertCircle, ChevronDown } from 'lucide-react';
 
 const SECTION_GROUPS: { id: string; label: string }[] = [
@@ -166,7 +166,7 @@ export function SiteContentTab({ onRefresh }: Props) {
   const fetchContent = async () => {
     setLoading(true);
     try {
-      const { data, error } = await supabase
+      const { data, error } = await db
         .from('site_content')
         .select('*')
         .order('section_key');
@@ -209,7 +209,7 @@ export function SiteContentTab({ onRefresh }: Props) {
       const updates = Object.entries(editedFields).map(([key, values]) => {
         const item = allContent.find((c) => c.section_key === key);
         if (!item) return Promise.resolve({ data: null, error: new Error(`Item not found: ${key}`) });
-        return supabase
+        return db
           .from('site_content')
           .update({
             content_ar: values.content_ar,

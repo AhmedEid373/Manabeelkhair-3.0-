@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { supabase, VolunteerRequest } from '../../lib/supabase';
+import { db, VolunteerRequest } from '../../lib/api';
 import { StatusBadge, STATUS_OPTIONS } from './StatusBadge';
 import { Search, Download, Trash2, CreditCard as Edit2, X, Save, User, Mail, Phone, Calendar, Users, MapPin, Clock, Briefcase, StickyNote } from 'lucide-react';
 
@@ -41,7 +41,7 @@ export function VolunteersTab({ volunteers, onRefresh }: Props) {
 
   const saveEdit = async () => {
     if (!editingId) return;
-    await supabase
+    await db
       .from('volunteer_requests')
       .update({ status: editForm.status, admin_notes: editForm.admin_notes })
       .eq('id', editingId);
@@ -51,7 +51,7 @@ export function VolunteersTab({ volunteers, onRefresh }: Props) {
 
   const handleDelete = async (id: string) => {
     if (!window.confirm('هل أنت متأكد من حذف هذا الطلب؟')) return;
-    await supabase.from('volunteer_requests').delete().eq('id', id);
+    await db.from('volunteer_requests').delete().eq('id', id);
     onRefresh();
   };
 

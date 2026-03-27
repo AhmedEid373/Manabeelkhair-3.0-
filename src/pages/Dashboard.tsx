@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useAuth } from '../contexts/AuthContext';
-import { supabase, Contact, DonationRequest, VolunteerRequest } from '../lib/supabase';
+import { db, Contact, DonationRequest, VolunteerRequest } from '../lib/api';
 import { DashboardLogin } from '../components/dashboard/DashboardLogin';
 import { DashboardStats } from '../components/dashboard/DashboardStats';
 import { ContactsTab } from '../components/dashboard/ContactsTab';
@@ -35,9 +35,9 @@ export function Dashboard() {
     setLoading(true);
     try {
       const [contactsRes, donationsRes, volunteersRes] = await Promise.all([
-        supabase.from('contacts').select('*').order('created_at', { ascending: false }),
-        supabase.from('donation_requests').select('*').order('created_at', { ascending: false }),
-        supabase.from('volunteer_requests').select('*').order('created_at', { ascending: false }),
+        db.from('contacts').select('*').order('created_at', { ascending: false }),
+        db.from('donation_requests').select('*').order('created_at', { ascending: false }),
+        db.from('volunteer_requests').select('*').order('created_at', { ascending: false }),
       ]);
       setContacts((contactsRes.data || []) as Contact[]);
       setDonations((donationsRes.data || []) as DonationRequest[]);

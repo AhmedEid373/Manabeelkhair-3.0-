@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Send, CheckCircle, AlertCircle, User, Mail, Phone, DollarSign, Tag, Heart } from 'lucide-react';
-import { supabase } from '../lib/supabase';
+import { db } from '../lib/api';
 import { useLanguage } from '../contexts/LanguageContext';
 
 interface FormState {
@@ -66,7 +66,7 @@ export function DonationContactForm() {
 
     setLoading(true);
     try {
-      const { error: dbError } = await supabase.from('donation_requests').insert([{
+      const { error: dbError } = await db.from('donation_requests').insert([{
         full_name: form.full_name,
         email: form.email,
         phone: form.phone,

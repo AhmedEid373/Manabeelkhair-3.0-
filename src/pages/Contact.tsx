@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Send, CheckCircle, AlertCircle, Mail, Phone, MapPin, Clock, Facebook, Instagram, Linkedin, Truck, Users, Building2, MessageCircle } from 'lucide-react';
 import { useLanguage } from '../contexts/LanguageContext';
-import { supabase } from '../lib/supabase';
+import { db } from '../lib/api';
 
 export function Contact() {
   const { language, t } = useLanguage();
@@ -24,7 +24,7 @@ export function Contact() {
     setErrorMessage('');
 
     try {
-      const { error } = await supabase
+      const { error } = await db
         .from('contacts')
         .insert([
           {

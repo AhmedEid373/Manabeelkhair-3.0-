@@ -1,5 +1,5 @@
 import { createContext, useContext, useState, useEffect, useCallback, ReactNode } from 'react';
-import { supabase, SiteContent } from '../lib/supabase';
+import { db, SiteContent } from '../lib/api';
 
 type SiteContentContextType = {
   content: Record<string, SiteContent>;
@@ -16,7 +16,7 @@ export function SiteContentProvider({ children }: { children: ReactNode }) {
 
   const fetchContent = useCallback(async () => {
     try {
-      const { data, error } = await supabase
+      const { data, error } = await db
         .from('site_content')
         .select('*');
 
