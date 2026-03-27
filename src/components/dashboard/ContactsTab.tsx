@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { supabase, Contact } from '../../lib/supabase';
+import { db, Contact } from '../../lib/api';
 import { StatusBadge, STATUS_OPTIONS } from './StatusBadge';
 import { Search, Download, Trash2, CreditCard as Edit2, X, Save, User, Mail, Phone, MessageSquare, Calendar, StickyNote } from 'lucide-react';
 
@@ -42,7 +42,7 @@ export function ContactsTab({ contacts, onRefresh }: Props) {
 
   const saveEdit = async () => {
     if (!editingId) return;
-    await supabase
+    await db
       .from('contacts')
       .update({ status: editForm.status, notes: editForm.notes, updated_at: new Date().toISOString() })
       .eq('id', editingId);
@@ -52,7 +52,7 @@ export function ContactsTab({ contacts, onRefresh }: Props) {
 
   const handleDelete = async (id: string) => {
     if (!window.confirm('هل أنت متأكد من حذف هذه الرسالة؟')) return;
-    await supabase.from('contacts').delete().eq('id', id);
+    await db.from('contacts').delete().eq('id', id);
     onRefresh();
   };
 
